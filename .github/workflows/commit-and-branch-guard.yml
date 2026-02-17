@@ -1,0 +1,53 @@
+name: Commit And Branch Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  commit-messages:
+    name: Validate Commit Messages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint commits (Conventional Commits)
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: commitlint.config.cjs
+
+  protected-branch-check:
+    name: Verify Base Branch Protection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ensure PR targets a protected branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const baseBranch = context.payload.pull_request.base.ref;
+            const { owner, repo } = context.repo;
+
+            const { data: branch } = await github.rest.repos.getBranch({
+              owner,
+              repo,
+              branch: baseBranch,
+            });
+
+            if (!branch.protected) {
+              core.setFailed(
+                `Base branch "${baseBranch}" is not protected. ` +
+                `Enable branch protection rules in repository settings.`
+              );
+              return;
+            }
+
+            core.info(`Base branch "${baseBranch}" is protected.`);
