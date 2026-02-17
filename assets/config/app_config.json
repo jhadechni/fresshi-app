@@ -1,0 +1,16 @@
+{
+  "appName": "Fresshi",
+  "appVersion": "1.0.0",
+  "heroTitle": "Welcome to Fresshi",
+  "heroSubtitle": "Discover amazing products",
+  "heroButtonLabel": "Shop Now",
+  "featuredProductsLabel": "Featured Products",
+  "seeAllLabel": "See all",
+  "cartEmptyMessage": "Your cart is empty",
+  "checkoutButtonLabel": "Checkout",
+  "orderSuccessMessage": "Order placed successfully!",
+  "searchHint": "Search products...",
+  "noResultsMessage": "No products found",
+  "supportEmail": "support@fresshi.com",
+  "supportPhone": "+1 800 FRESSHI"
+}
