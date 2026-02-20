@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fresshi/core/logging/logging.dart';
 import 'package:fresshi/routes/app_router.dart';
 import 'package:fresshi/shared/ui/theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  initializeLogging();
   runApp(
     const ProviderScope(
       child: FresshiApp(),

@@ -1,6 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
-import 'package:fresshi/core/network/dio_client.dart';
 import 'package:fresshi/features/products/data/datasources/products_remote_datasource.dart';
 import 'package:fresshi/features/products/data/repositories/products_repository_impl.dart';
 import 'package:fresshi/features/products/domain/entities/product.dart';
@@ -8,14 +5,23 @@ import 'package:fresshi/features/products/domain/repositories/products_repositor
 import 'package:fresshi/features/products/domain/usecases/get_categories.dart';
 import 'package:fresshi/features/products/domain/usecases/get_product_by_id.dart';
 import 'package:fresshi/features/products/domain/usecases/get_products.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiendita/tiendita.dart' as tiendita;
 
 // --- Infrastructure providers ---
 
-final dioProvider = Provider<Dio>((ref) => DioClient.create());
+final tienditaProductRepositoryProvider = Provider<tiendita.ProductRepository>((
+  ref,
+) {
+  return tiendita.ProductRepository();
+});
 
-final productsRemoteDatasourceProvider =
-    Provider<ProductsRemoteDatasource>((ref) {
-  return ProductsRemoteDatasourceImpl(ref.watch(dioProvider));
+final productsRemoteDatasourceProvider = Provider<ProductsRemoteDatasource>((
+  ref,
+) {
+  return ProductsRemoteDatasourceImpl(
+    ref.watch(tienditaProductRepositoryProvider),
+  );
 });
 
 final productsRepositoryProvider = Provider<ProductsRepository>((ref) {
@@ -38,8 +44,7 @@ final getCategoriesUseCaseProvider = Provider<GetCategories>((ref) {
 
 // --- State providers ---
 
-final productsProvider =
-    AsyncNotifierProvider<ProductsNotifier, List<Product>>(
+final productsProvider = AsyncNotifierProvider<ProductsNotifier, List<Product>>(
   ProductsNotifier.new,
 );
 
@@ -56,8 +61,8 @@ class ProductsNotifier extends AsyncNotifier<List<Product>> {
 
 final categoriesProvider =
     AsyncNotifierProvider<CategoriesNotifier, List<String>>(
-  CategoriesNotifier.new,
-);
+      CategoriesNotifier.new,
+    );
 
 class CategoriesNotifier extends AsyncNotifier<List<String>> {
   @override
@@ -74,8 +79,8 @@ final selectedCategoryProvider = StateProvider<String?>((ref) => null);
 
 final filteredProductsProvider =
     AsyncNotifierProvider<FilteredProductsNotifier, List<Product>>(
-  FilteredProductsNotifier.new,
-);
+      FilteredProductsNotifier.new,
+    );
 
 class FilteredProductsNotifier extends AsyncNotifier<List<Product>> {
   @override
@@ -84,10 +89,9 @@ class FilteredProductsNotifier extends AsyncNotifier<List<Product>> {
     if (category == null) {
       return ref.watch(productsProvider.future);
     }
-    final result =
-        await ref.watch(productsRepositoryProvider).getProductsByCategory(
-              category,
-            );
+    final result = await ref
+        .watch(productsRepositoryProvider)
+        .getProductsByCategory(category);
     return result.fold(
       (failure) => throw Exception(failure.message),
       (products) => products,

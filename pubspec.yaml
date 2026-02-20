@@ -35,6 +35,12 @@ dependencies:
   # Utils
   equatable: ^2.0.7
 
+  # Logging
+  loggy: ^2.0.3
+  flutter_loggy: ^2.0.2
+  flutter_loggy_dio: ^3.0.1
+  tiendita: ^0.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -52,7 +58,6 @@ flutter:
 
   assets:
     - assets/config/
-    - assets/images/
 
   fonts:
     - family: Inter
